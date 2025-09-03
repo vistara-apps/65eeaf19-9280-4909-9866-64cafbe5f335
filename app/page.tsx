@@ -1,137 +1,141 @@
 'use client';
 
-import { useState } from 'react';
-import { ConnectWallet } from '@coinbase/onchainkit/wallet';
-import { Name, Identity } from '@coinbase/onchainkit/identity';
-import { useAccount } from 'wagmi';
-import { useBets } from './hooks/useBets';
+import { motion } from 'framer-motion';
+import { TrendingUp, Users, DollarSign, Target } from 'lucide-react';
+import { Header } from './components/Header';
+import { FloatingOrbs } from './components/FloatingOrbs';
 import { BetFeedItem } from './components/BetFeedItem';
 import { CreateBetButton } from './components/CreateBetButton';
-import { CreateBetModal } from './components/CreateBetModal';
-import { StatsCard } from './components/StatsCard';
-import { Trophy, TrendingUp, Users, Zap } from 'lucide-react';
+import { StatCard } from './components/StatCard';
+import { useBets } from './hooks/useBets';
 
-export default function Home() {
-  const { address, isConnected } = useAccount();
-  const { bets, matches, loading, createBet, joinBet } = useBets();
-  const [showCreateModal, setShowCreateModal] = useState(false);
+export default function HomePage() {
+  const { bets, loading, joinBet, getStats } = useBets();
+  const stats = getStats();
 
-  const handleJoinBet = async (betId: string) => {
-    if (!address) return;
-    try {
-      await joinBet(betId, address);
-    } catch (error) {
-      console.error('Error joining bet:', error);
-    }
+  const handleJoinBet = (betId: string) => {
+    // In a real app, this would get the user's address
+    joinBet(betId, '0xuser...address');
   };
 
-  const handleCreateBet = async (betData: any) => {
-    await createBet(betData);
+  const handleCreateBet = () => {
+    // In a real app, this would open a create bet modal
+    console.log('Create bet clicked');
   };
 
-  const activeBets = bets.filter(bet => bet.status === 'active').length;
-  const pendingBets = bets.filter(bet => bet.status === 'pending').length;
-  const settledBets = bets.filter(bet => bet.status === 'settled').length;
-  const totalVolume = bets.reduce((sum, bet) => sum + parseFloat(bet.stake || '0'), 0);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-dark-bg via-purple-900/20 to-dark-bg">
+        <Header />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full"
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
-        {/* Header */}
-        <header className="text-center mb-12">
-          <h1 className="text-display gradient-primary bg-clip-text text-transparent mb-4">
-            BetBase
-          </h1>
-          <p className="text-body text-gray-300 mb-8 max-w-2xl mx-auto">
-            A football peer-to-peer betting app built for Base Wallet users. Easy bet creation and discovery using Base.
+    <div className="min-h-screen bg-gradient-to-br from-dark-bg via-purple-900/20 to-dark-bg">
+      <FloatingOrbs />
+      <Header />
+      
+      <main className="relative z-10 px-4 py-6 max-w-6xl mx-auto">
+        {/* Hero Section */}
+        <motion.section
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-12"
+        >
+          <h1 className="display gradient-text mb-4">BetBase</h1>
+          <p className="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+            A football peer-to-peer betting app built for Base Wallet users. 
+            Easy bet creation and discovery using Remix.
           </p>
+        </motion.section>
+
+        {/* Stats Grid */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12"
+        >
+          <StatCard
+            title="Total Bets"
+            value={stats.totalBets.toString()}
+            subtitle="All time"
+            icon={<Target className="w-5 h-5" />}
+            gradient="from-purple-500 to-blue-500"
+          />
+          <StatCard
+            title="Active Bets"
+            value={stats.activeBets.toString()}
+            subtitle="Right now"
+            icon={<TrendingUp className="w-5 h-5" />}
+            gradient="from-green-500 to-emerald-500"
+          />
+          <StatCard
+            title="Total Volume"
+            value={`${stats.totalVolume.toFixed(2)} ETH`}
+            subtitle="Wagered"
+            icon={<DollarSign className="w-5 h-5" />}
+            gradient="from-orange-500 to-red-500"
+          />
+          <StatCard
+            title="Win Rate"
+            value={`${stats.winRate}%`}
+            subtitle="Success rate"
+            icon={<Users className="w-5 h-5" />}
+            gradient="from-pink-500 to-purple-500"
+          />
+        </motion.section>
+
+        {/* Bet Feed */}
+        <motion.section
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="heading text-white">Latest Bets</h2>
+            <span className="text-sm text-white/60">{bets.length} available</span>
+          </div>
           
-          {!isConnected ? (
-            <ConnectWallet />
-          ) : (
-            <div className="flex items-center justify-center gap-4 mb-6">
-              <Identity address={address} className="glass-card p-3 rounded-lg">
-                <Name address={address} />
-              </Identity>
-            </div>
-          )}
-        </header>
-
-        {isConnected && (
-          <>
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <StatsCard
-                title="Active Bets"
-                value={activeBets.toString()}
-                icon={<Zap className="w-6 h-6" />}
-                trend="neutral"
-              />
-              <StatsCard
-                title="Pending Bets"
-                value={pendingBets.toString()}
-                icon={<Users className="w-6 h-6" />}
-                trend="neutral"
-              />
-              <StatsCard
-                title="Total Volume"
-                value={`${totalVolume.toFixed(2)} ETH`}
-                icon={<TrendingUp className="w-6 h-6" />}
-                trend="up"
-              />
-              <StatsCard
-                title="Settled"
-                value={settledBets.toString()}
-                icon={<Trophy className="w-6 h-6" />}
-                trend="neutral"
-              />
-            </div>
-
-            {/* Create Bet Section */}
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-heading text-white mb-2">Football Bets</h2>
-                <p className="text-gray-400">Create or join peer-to-peer bets</p>
-              </div>
-              <CreateBetButton onClick={() => setShowCreateModal(true)} />
-            </div>
-
-            {/* Bet Feed */}
-            <div className="space-y-4">
-              {loading ? (
-                <div className="text-center py-12">
-                  <div className="w-8 h-8 border-2 border-purple-400/30 border-t-purple-400 rounded-full animate-spin mx-auto mb-4" />
-                  <p className="text-gray-400">Loading bets...</p>
-                </div>
-              ) : bets.length === 0 ? (
-                <div className="text-center py-12">
-                  <Trophy className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-white mb-2">No bets yet</h3>
-                  <p className="text-gray-400 mb-4">Be the first to create a bet!</p>
-                  <CreateBetButton onClick={() => setShowCreateModal(true)} />
-                </div>
-              ) : (
-                bets.map((bet) => (
+          <div className="space-y-4 mb-8">
+            {bets.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-12 glass-effect rounded-lg border border-white/10"
+              >
+                <p className="text-white/70 mb-4">No bets available yet</p>
+                <p className="text-white/50 text-sm">Be the first to create one!</p>
+              </motion.div>
+            ) : (
+              bets.map((bet, index) => (
+                <motion.div
+                  key={bet.betId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
                   <BetFeedItem
-                    key={bet.betId}
                     bet={bet}
-                    onJoin={handleJoinBet}
+                    withStatus={true}
+                    onJoin={() => handleJoinBet(bet.betId)}
                   />
-                ))
-              )}
-            </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </motion.section>
 
-            {/* Create Bet Modal */}
-            <CreateBetModal
-              isOpen={showCreateModal}
-              onClose={() => setShowCreateModal(false)}
-              matches={matches}
-              onCreateBet={handleCreateBet}
-              userAddress={address}
-            />
-          </>
-        )}
-      </div>
+        <CreateBetButton onClick={handleCreateBet} />
+      </main>
     </div>
   );
 }

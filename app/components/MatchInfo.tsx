@@ -1,46 +1,49 @@
 'use client';
 
-import { Match } from '../types';
-import { Calendar, Clock } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Clock } from 'lucide-react';
+import { Match } from '../types/bet';
 
 interface MatchInfoProps {
   match: Match;
-  variant?: 'withTime';
+  withTime?: boolean;
 }
 
-export function MatchInfo({ match, variant = 'withTime' }: MatchInfoProps) {
+export function MatchInfo({ match, withTime = true }: MatchInfoProps) {
   const getStatusColor = () => {
     switch (match.status) {
-      case 'in_progress': return 'text-green-400';
-      case 'finished': return 'text-gray-400';
-      case 'scheduled': return 'text-blue-400';
-      default: return 'text-gray-400';
+      case 'in_progress':
+        return 'text-green-400';
+      case 'finished':
+        return 'text-gray-400';
+      default:
+        return 'text-purple-400';
     }
   };
 
   return (
-    <div className="glass-card p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h4 className="text-lg font-semibold text-white">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="glass-effect rounded-lg p-4 border border-white/10"
+    >
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="font-semibold text-white">
           {match.teamA} vs {match.teamB}
-        </h4>
-        <span className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${getStatusColor()} bg-current/10`}>
+        </h3>
+        <span className={`text-sm font-medium capitalize ${getStatusColor()}`}>
           {match.status.replace('_', ' ')}
         </span>
       </div>
-
-      {variant === 'withTime' && (
-        <div className="flex items-center gap-4 text-gray-400 text-sm">
-          <div className="flex items-center gap-2">
-            <Calendar className="w-4 h-4" />
-            <span>{match.startTime.toLocaleDateString()}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span>{match.startTime.toLocaleTimeString()}</span>
-          </div>
+      
+      {withTime && (
+        <div className="flex items-center gap-2 text-white/60">
+          <Clock className="w-4 h-4" />
+          <span className="text-sm">
+            {new Date(match.startTime).toLocaleString()}
+          </span>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

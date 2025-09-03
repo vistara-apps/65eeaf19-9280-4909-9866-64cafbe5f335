@@ -1,10 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
-  swcMinify: true,
   experimental: {
-    appDir: true
-  }
+    appDir: true,
+  },
+  transpilePackages: ['@coinbase/onchainkit']
 };
 
 export default nextConfig;

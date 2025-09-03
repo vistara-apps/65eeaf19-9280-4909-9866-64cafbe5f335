@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 
 interface CreateBetButtonProps {
@@ -9,12 +10,13 @@ interface CreateBetButtonProps {
 
 export function CreateBetButton({ variant = 'primary', onClick }: CreateBetButtonProps) {
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className="btn-primary flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+      className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-full shadow-lg hover:shadow-glow transition-all duration-200 z-10"
     >
-      <Plus className="w-5 h-5" />
-      Create Bet
-    </button>
+      <Plus className="w-6 h-6" />
+    </motion.button>
   );
 }
