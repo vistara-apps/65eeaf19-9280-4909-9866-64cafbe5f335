@@ -1,0 +1,30 @@
+{
+  "accountAssociation": {
+    "header": "",
+    "payload": "",
+    "signature": ""
+  },
+  "frame": {
+    "version": "1",
+    "name": "BetBase",
+    "subtitle": "Built with Zara",
+    "description": "BetBase is a Base Mini App built with Zara.",
+    "iconUrl": "https://0co.to/images/zara-2.png",
+    "homeUrl": "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app",
+    "splashImageUrl": "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app/splash.png",
+    "splashBackgroundColor": "#000000",
+    "heroImageUrl": "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app/image.png",
+    "tagline": "BetBase",
+    "screenshotUrls": [
+      "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app/screenshot.png",
+      "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app/screenshot.png"
+    ],
+    "primaryCategory": "social",
+    "tags": [
+      "base",
+      "miniapp",
+      "onchainkit"
+    ],
+    "webhookUrl": "https://65eeaf1992804909986664cafbe5f335-fqdy-6h0f0e4fu-vistara.vercel.app/api/webhook"
+  }
+}
